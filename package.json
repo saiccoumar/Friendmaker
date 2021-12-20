@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/saiccoumar/Friendmaker/issues"
   },
-  "homepage": "https://github.com/saiccoumar/Friendmaker#readme"
+  "homepage": "https://github.com/saiccoumar/Friendmaker#readme",
+  "dependencies": {
+    "discord.js": "^13.3.1"
+  }
 }
