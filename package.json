@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/saiccoumar/Friendmaker#readme",
   "dependencies": {
-    "discord.js": "^13.3.1"
+    "discord.js": "^13.3.1",
+    "node": "^17.3.0"
   }
 }

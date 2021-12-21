@@ -1,4 +1,4 @@
-/*Copyright 2013 Mir Ikram Uddin
+/*Copyright 2021 Sai Coumar
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,6 +13,10 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 const { Client, Intents, Permissions } = require('discord.js');
+const { syncBuiltinESMExports } = require('module');
+
+var channelsToBePruned = [];
+var counter = 0;
 
 const client = new Client({ intents: 
     [Intents.FLAGS.GUILDS,
@@ -25,6 +29,7 @@ const client = new Client({ intents:
 
 
 client.on("reader", () => {
+    // pruneChannels();
     console.log(`logged in as ${client.user.tag}!`)
     let guild = client.guilds.cache.get("Server ID");
     guild.members.cache.filter(member => !member.user.bot).forEach(member => console.log("===>>>", member.user.username));
@@ -33,27 +38,32 @@ client.on("reader", () => {
 
 client.on("message", msg => {
     if (msg.content === "tag") {
+        counter++;
         let server = msg.guild.id;
         let channel = msg.channel.id;
         msg.reply("tagged");
         const list = client.guilds.cache.get(server).members.cache;
         // console.log(list.length);
         memberList = [];
-        list.forEach(member => msg.reply(member.user.username));
+        list.forEach(member => msg.reply(member.user.username+": "+ member.user.id));
         // list.forEach(member => memberList.push(member));
         // for (var i=0;i<list.length;i++){
         list.forEach(function(member){
-            if(member.user.bot){
+            // if(member.user.bot){
                 memberList.push(member);
-            }
+            // }
         });
         
         if (memberList.length > 1){
-            channel = createPrivateVoiceChannel(server, "private-channel", memberList[0],memberList[1]);
+            channel = createPrivateVoiceChannel(server, counter+"Friendmaker: private-channel", memberList[0],memberList[1]);
         }
         
 
 
+    }if (msg.content.includes("headpats") && msg.content.includes("give") && msg.content.includes("more")) {
+        msg.reply("you get extra headpats");
+    } else if (msg.content.includes("headpats") && msg.content.includes("give")) {
+        msg.reply("you get headpats");
     }
     
 
@@ -90,11 +100,11 @@ async function createPrivateVoiceChannel(serverId, channelName, member1, member2
     const channel = await guild.channels.create(channelName, {type: 'GUILD_VOICE', permissionOverwrites: [{
         type: 'member',
         id: member1.user.id,
-        allow: [Permissions.FLAGS.VIEW_CHANNEL]
+        deny: [Permissions.FLAGS.VIEW_CHANNEL]
     }, {
         type: 'member',
         id: member2.user.id,
-        allow: [Permissions.FLAGS.VIEW_CHANNEL]
+        deny: [Permissions.FLAGS.VIEW_CHANNEL]
     }, {
         type: 'role',
         id: everyoneRole.id,
@@ -104,16 +114,56 @@ async function createPrivateVoiceChannel(serverId, channelName, member1, member2
         maxAge: 10 * 60 * 1000, // maximum time for the invite, in milliseconds
         maxUses: 2 // maximum times it can be used
       },)
-    member1.send(invite ? `Here's your invite: ${invite}` : "There has been an error during the creation of the invite.")
+    // member1.send(invite ? `Here's your invite: ${invite}` : "There has been an error during the creation of the invite.")
     member2.send(invite ? `Here's your invite: ${invite}` : "There has been an error during the creation of the invite.")
-    client.on('voiceStateUpdate', (oldState, newState) => {
-        if (channel.members.size < 1){
-            channel.delete();
-        }
-    });
+    const sleep = ms => new Promise(res => setTimeout(res, ms));
+    await sleep(5000);
+    console.log("pushed");
+    channelsToBePruned.push(serverId+"/"+channel.id);
+    
 
     
 }
 
+client.on('voiceStateUpdate', (oldState, newState) => {
+    // channel pruning
+    pruneChannels();
+});
+async function pruneChannels(){
+        console.log("new prune");
+        var indexArr = []
+        if (channelsToBePruned.length > 0){
+        for (var i=0;i<channelsToBePruned.length;i++){
+            
+            console.log(channelsToBePruned[i]);
+            var channelInfo = channelsToBePruned[i].split("/");
+            const guild = await client.guilds.fetch(channelInfo[0]);
+            const channel = await guild.channels.cache.get(channelInfo[1]);
+            // console.log(channel.name);
+            if (channel.members.size < 1){
+                indexArr.push(channelsToBePruned[i]);
+                console.log("deleted: "+channelsToBePruned[i]+" "+channel.name);
+                channel.delete();
+                
+                // indexArr.push(i);
+                
+            } 
+        }
+    }
+            
+        
+        for (var i=0;i<indexArr.length;i++){
+            console.log(channelsToBePruned.length);
+            // console.log(indexArr[i]);
+            const index = channelsToBePruned.indexOf(indexArr[i]);
+            if (index > -1) {
+                channelsToBePruned.splice(index, 1);
+            }
+        }
+        // console.log("waited");
+       
+}
 
-client.login('');
+
+
+client.login('OTIyNDk5OTk1MDcxMDUzODM0.YcCXEg.bVBNgA65hO-H3iEQ41Eqjp5SDVQ');
