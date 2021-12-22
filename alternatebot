@@ -1,0 +1,6 @@
+if (msg.content.includes("headpats") && msg.content.includes("give") && msg.content.includes("more")) {
+        msg.reply("you get extra headpats");
+    } else if (msg.content.includes("headpats") && msg.content.includes("give")) {
+        msg.reply("you get headpats");
+    }
+    
