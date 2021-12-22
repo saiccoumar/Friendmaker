@@ -376,4 +376,4 @@ async function makeRoles(guild) {
 }
 
 
-client.login('OTIyNDk5OTk1MDcxMDUzODM0.YcCXEg.1HAFh_mwXrMJv05IFW_Xp54ByQk');
+client.login('');
