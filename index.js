@@ -75,7 +75,11 @@ client.on("message", msg => {
             // console.log(typeof (randomPersonID + ""));
             // console.log(randomPersonID);
             // console.log(memberList[0].user.id === randomPersonID + "");
+            try{
             channel = createPrivateVoiceChannel(msg.guild, "Friendmaker: private-channel", randomPersonID, msg.author.id);
+            } catch{
+                msg.reply('Uh-oh! Looks like there was an error in making the channel!')
+            }
         } else {
             msg.reply("Not enough people to find a friend! Sorry...")
         }
