@@ -469,4 +469,4 @@ app.listen(process.env.PORT, function () {
     console.log("Friendmaker is awake");
 });
 
-client.login('OTIyNDk5OTk1MDcxMDUzODM0.YcCXEg._MpAzRZswX1Eyi8RVvUaOnPlN4k');
+client.login(process.env.TOKEN);
