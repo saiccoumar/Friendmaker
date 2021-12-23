@@ -53,28 +53,28 @@ client.on("message", msg => {
         // const fetch = msg.guild.members.fetch().then(members => { members.forEach(member => list.push(member)) });
 
         // TODO: Remove this.
-        list.forEach(member => msg.reply(member.user.username + ": " + member.user.id));
+        // list.forEach(member => msg.reply(member.user.username + ": " + member.user.id));
 
 
         list.forEach(function (member) {
-            console.log(member.user.username);
+            // console.log(member.user.username);
             if (!(member.user.bot || (msg.member.id == member.user.id))) {
                 memberList.push(member);
-                console.log("pushed!");
+                // console.log("pushed!");
             }
-            console.log("continue");
+            // console.log("continue");
         });
 
         msg.reply("Finding friend!");
-        console.log(typeof memberList[0].user.id);
+        // console.log(typeof memberList[0].user.id);
 
-        if (memberList.length > 0) {
-            console.log(memberList.length);
+        if (memberList.length > 1) {
+            // console.log(memberList.length);
             randomPersonID = filter(memberList, msg);
-            console.log(memberList[0].user.id)
-            console.log(typeof (randomPersonID + ""));
-            console.log(randomPersonID);
-            console.log(memberList[0].user.id === randomPersonID + "");
+            // console.log(memberList[0].user.id)
+            // console.log(typeof (randomPersonID + ""));
+            // console.log(randomPersonID);
+            // console.log(memberList[0].user.id === randomPersonID + "");
             channel = createPrivateVoiceChannel(msg.guild, "Friendmaker: private-channel", randomPersonID, msg.author.id);
         } else {
             msg.reply("Not enough people to find a friend! Sorry...")
@@ -393,7 +393,8 @@ async function roles(guild, message) {
 }
 
 async function makeRoles(guild) {
-    console.log(interestRoleColors.length == interestRoles.length);
+    // Don't uncomment this stuff
+    // console.log(interestRoleColors.length == interestRoles.length);
     for (var i = 0; i < interestRoles.length; i++) {
         var role;
         try {
@@ -419,22 +420,22 @@ function filter(memberList, msg) {
         // msg.member.roles.cache.some(r => console.log(r.name));
         var Role = msg.member.roles.cache.some(r => r.name.includes(interestRoles[i]));
         if (Role) {
-            console.log(Role);
+            // console.log(Role);
             authorRoles.push(interestRoles[i]);
         }
     }
-    console.log("break " + authorRoles.length);
+    // console.log("break " + authorRoles.length);
     var viableMembers = [];
     var counter = 0;
     memberList.forEach(function (memb) {
-        console.log(typeof memb.user.id);
+        // console.log(typeof memb.user.id);
         counter++;
-        console.log("Counter: " + counter + " " + memb.user.username);
+        // console.log("Counter: " + counter + " " + memb.user.username);
         for (var i = 0; i < interestRoles.length; i++) {
             // msg.member.roles.cache.some(r => console.log(r.name));
             var Role = memb.roles.cache.some(r => r.name.includes(interestRoles[i]));
             if (Role) {
-                console.log(Role);
+                // console.log(Role);
                 if (authorRoles.includes(interestRoles[i])) {
                     viableMembers.push(memb);
                     break;
@@ -443,11 +444,11 @@ function filter(memberList, msg) {
             }
         }
     });
-    console.log(viableMembers.length);
+    // console.log(viableMembers.length);
     let randInt = Math.floor(Math.random() * viableMembers.length);
-    console.log("Random integer: " + randInt);
+    // console.log("Random integer: " + randInt);
     let randomMember = viableMembers[randInt];
-    console.log(randomMember.user.username + " matched with " + msg.member.user.username);
+    // console.log(randomMember.user.username + " matched with " + msg.member.user.username);
     return randomMember;
 }
 
@@ -468,4 +469,4 @@ app.listen(process.env.PORT, function () {
     console.log("Friendmaker is awake");
 });
 
-client.login(process.env.TOKEN);
+client.login('OTIyNDk5OTk1MDcxMDUzODM0.YcCXEg._MpAzRZswX1Eyi8RVvUaOnPlN4k');
