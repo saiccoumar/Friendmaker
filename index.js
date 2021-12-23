@@ -15,7 +15,8 @@ limitations under the License.*/
 const { Client, Intents, Permissions } = require('discord.js');
 const Discord = require('discord.js')
 const config = require('./config.json')
-
+var express = require('express');
+var app = express();
 var channelsToBePruned = [];
 var interestRoles = ['f:Coding', 'f:Anime', 'f:K-Pop', 'f:Music', 'f:Film', 'f:Food', 'f:Sports', 'f:Fitness and Health', 'f:Beauty', 'f:Gaming', 'f:Art', 'f:Literature', 'f:Science and Technology', 'f:Travel', 'f:Mental Health', 'f:Psychology'];
 var interestRoleColors = ['#1ABC9C', '#11806A', '#2ECC71', '#1F8B4C', '#3498DB', '#206694', '#9B59B6', '#71368A', '#E91E63', '#AD1457', '#F1C40F', '#C27C0E', '#E67E22', '#A84300', '#E74C3C', '#992D22'];
@@ -462,5 +463,9 @@ async function recache(serverID) {
         });
 
 }
+
+app.listen(process.env.PORT, function () {
+    console.log("Friendmaker is awake");
+});
 
 client.login(process.env.TOKEN);
