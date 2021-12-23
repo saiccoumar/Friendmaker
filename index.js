@@ -463,4 +463,4 @@ async function recache(serverID) {
 
 }
 
-client.login('');
+client.login('OTIyNDk5OTk1MDcxMDUzODM0.YcCXEg.DEyR4NRDjk4hBovjU4K5ygAoN1M');
