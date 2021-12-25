@@ -1,4 +1,6 @@
 # Friendmaker
+### Add to server
+- https://discord.com/oauth2/authorize?client_id=922499995071053834&permissions=1100870937713&scope=bot
 ## Instructions
 - !summon: sends a message with instructions
 - !send interests message: sends a self-assign roles message
