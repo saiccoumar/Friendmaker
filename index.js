@@ -487,5 +487,5 @@ async function recache(serverID) {
 }
 
 
-// client.login(process.env.TOKEN);
-client.login('OTIyNDk5OTk1MDcxMDUzODM0.YcCXEg.QpEFnwVQTr-jgN-gHk2Gzs_4x48');
+client.login(process.env.TOKEN);
+
