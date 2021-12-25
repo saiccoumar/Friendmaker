@@ -19,7 +19,7 @@ const config = require('./config.json')
 var channelsToBePruned = [];
 var interestRoles = ['f:Coding', 'f:Anime', 'f:K-Pop', 'f:Music', 'f:Film', 'f:Food', 'f:Sports', 'f:Fitness and Health', 'f:Beauty', 'f:Gaming', 'f:Art', 'f:Literature', 'f:Science and Technology', 'f:Travel', 'f:Mental Health', 'f:Psychology'];
 var interestRoleColors = ['#1ABC9C', '#11806A', '#2ECC71', '#1F8B4C', '#3498DB', '#206694', '#9B59B6', '#71368A', '#E91E63', '#AD1457', '#F1C40F', '#C27C0E', '#E67E22', '#A84300', '#E74C3C', '#992D22'];
-var emojiLib = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐻', '🐨', '🐯', '🦁', '🐮', '🐷', '🐵', '🐸'];
+var emojiLib = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐻‍❄️', '🐨', '🐯', '🦁', '🐮', '🐷', '🐵', '🐸'];
 const client = new Client({
     intents:
         [Intents.FLAGS.GUILDS,
@@ -66,20 +66,27 @@ client.on("message", msg => {
 
         msg.reply("Finding friend!");
         // console.log(typeof memberList[0].user.id);
-
+        var randomPersonID;
         if (memberList.length > 1) {
             // console.log(memberList.length);
             randomPersonID = filter(memberList, msg);
             // console.log(memberList[0].user.id)
-            // console.log(typeof (randomPersonID + ""));
-            // console.log(randomPersonID);
+            console.log(typeof (randomPersonID + ""));
+            console.log(randomPersonID);
             // console.log(memberList[0].user.id === randomPersonID + "");
-            try{
-            channel = createPrivateVoiceChannel(msg.guild, "Friendmaker: private-channel", randomPersonID, msg.author.id);
-            } catch{
+
+        } else {
+            msg.reply("Not enough people to find a friend! Sorry...")
+        }
+        if (randomPersonID != null) {
+            try {
+                // console.log(typeof randomPersonID);
+
+                channel = createPrivateVoiceChannel(msg.guild, "Friendmaker: private-channel", randomPersonID, msg.author.id);
+            } catch {
                 msg.reply('Uh-oh! Looks like there was an error in making the channel!')
             }
-        } else {
+        }else {
             msg.reply("Not enough people to find a friend! Sorry...")
         }
 
@@ -97,13 +104,13 @@ client.on("message", msg => {
             msg.reply("You don't have permissions to do that!")
         }
     } if (msg.content === "!make roles") {
-        if (msg.channel.permissionsFor(msg.author).has("ADMIN")) {
+        if (msg.channel.permissionsFor(msg.author).has("ADMINISTRATOR")) {
             makeRoles(msg.guild);
         } else {
             msg.reply("You don't have permissions to do that!")
         }
     } if (msg.content === "!send interests message") {
-        if (msg.channel.permissionsFor(msg.author).has("ADMIN")) {
+        if (msg.channel.permissionsFor(msg.author).has("ADMINISTRATOR")) {
             roles(msg.guild, msg);
         } else {
             msg.reply("You don't have permissions to do that!")
@@ -112,14 +119,14 @@ client.on("message", msg => {
         var content = "Commands: \n!make roles-recreates all roles\n!send interests message-sends a self-assign roles message\n!prune channels-cleans up Friendmaker channels that may not get deleted accidentally\n!find a friend-finds a friend\n!cache users-updates member list\n!list users-lists all users";
         msg.reply(content);
     } if (msg.content === "!cache users") {
-        if (msg.channel.permissionsFor(msg.author).has("ADMIN")) {
+        if (msg.channel.permissionsFor(msg.author).has("ADMINISTRATOR")) {
             recache(msg.guildId);
             msg.reply("cache updated!")
         } else {
             msg.reply("You don't have permissions to do that!")
         }
     } if (msg.content === "!list users") {
-        if (msg.channel.permissionsFor(msg.author).has("ADMIN")) {
+        if (msg.channel.permissionsFor(msg.author).has("ADMINISTRATOR")) {
             const list = client.guilds.cache.get(msg.guildId).members.cache;
             list.forEach(member => msg.reply(member.user.username + ": " + member.user.id));
         } else {
@@ -156,7 +163,8 @@ async function createPrivateTextChannel(serverId, channelName, member1id, member
 
 async function createPrivateVoiceChannel(guild, channelName, member1id, member2id) {
     // const guild = await client.guilds.fetch(serverId);
-
+    //flag console.log(typeof member1id);
+    //flag console.log(typeof member2id);
     const everyoneRole = guild.roles.everyone;
     // process.exit();
     let member1 = await client.users.fetch(member1id);
@@ -166,11 +174,11 @@ async function createPrivateVoiceChannel(guild, channelName, member1id, member2i
         type: 'GUILD_VOICE', permissionOverwrites: [{
             type: 'member',
             id: member1id,
-            deny: [Permissions.FLAGS.VIEW_CHANNEL]
+            allow: [Permissions.FLAGS.VIEW_CHANNEL, Permissions.FLAGS.CONNECT]
         }, {
             type: 'member',
             id: member2id,
-            deny: [Permissions.FLAGS.VIEW_CHANNEL]
+            allow: [Permissions.FLAGS.VIEW_CHANNEL, Permissions.FLAGS.CONNECT]
         }, {
             type: 'role',
             id: everyoneRole.id,
@@ -181,10 +189,10 @@ async function createPrivateVoiceChannel(guild, channelName, member1id, member2i
         maxAge: 10 * 60 * 1000,
         maxUses: 2
     })
-    try{
+    try {
         member1.send(invite ? `Here's your invite: ${invite}` : "There has been an error during the creation of the invite.")
         member2.send(invite ? `Here's your invite: ${invite}` : "There has been an error during the creation of the invite.")
-    } catch{
+    } catch {
         msg.reply("A user has disabled DM's for bots, and an invite can't be sent!");
     }
     const sleep = ms => new Promise(res => setTimeout(res, ms));
@@ -275,120 +283,123 @@ async function roles(guild, message) {
 
     // Reacting to the embed message.
     for (var i = 0; i < emojiLib.length; i++) {
+        // console.log(emojiLib.length);
         await reactionMessage.react(emojiLib[i]);
     }
 
 
 
     client.on('messageReactionAdd', async (reaction, user) => {
+        const newMember = guild.members.cache.get(user.id);
         if (reaction.message.partial) await reaction.message.fetch();
         if (reaction.partial) await reaction.fetch();
         if (user.bot) return;
         if (!reaction.message.guild) return;
         switch (reaction.emoji.name) {
             case emojiLib[0]:
-                message.member.roles.add(localRoles[0]);
+                newMember.roles.add(localRoles[0]);
                 break;
             case emojiLib[1]:
-                message.member.roles.add(localRoles[1]);
+                newMember.roles.add(localRoles[1]);
                 break;
             case emojiLib[2]:
-                message.member.roles.add(localRoles[2]);
+                newMember.roles.add(localRoles[2]);
                 break;
             case emojiLib[3]:
-                message.member.roles.add(localRoles[3]);
+                newMember.roles.add(localRoles[3]);
                 break;
             case emojiLib[4]:
-                message.member.roles.add(localRoles[4]);
+                newMember.roles.add(localRoles[4]);
                 break;
             case emojiLib[5]:
-                message.member.roles.add(localRoles[5]);
+                newMember.roles.add(localRoles[5]);
                 break;
             case emojiLib[6]:
-                message.member.roles.add(localRoles[6]);
+                newMember.roles.add(localRoles[6]);
                 break;
             case emojiLib[7]:
-                message.member.roles.add(localRoles[7]);
+                newMember.roles.add(localRoles[7]);
                 break;
             case emojiLib[8]:
-                message.member.roles.add(localRoles[8]);
+                newMember.roles.add(localRoles[8]);
                 break;
             case emojiLib[9]:
-                message.member.roles.add(localRoles[9]);
+                newMember.roles.add(localRoles[9]);
                 break;
             case emojiLib[10]:
-                message.member.roles.add(localRoles[10]);
+                newMember.roles.add(localRoles[10]);
                 break;
             case emojiLib[11]:
-                message.member.roles.add(localRoles[11]);
+                newMember.roles.add(localRoles[11]);
                 break;
             case emojiLib[12]:
-                message.member.roles.add(localRoles[12]);
+                newMember.roles.add(localRoles[12]);
                 break;
             case emojiLib[13]:
-                message.member.roles.add(localRoles[13]);
+                newMember.roles.add(localRoles[13]);
                 break;
             case emojiLib[14]:
-                message.member.roles.add(localRoles[14]);
+                newMember.roles.add(localRoles[14]);
                 break;
             case emojiLib[15]:
-                message.member.roles.add(localRoles[15]);
+                newMember.roles.add(localRoles[15]);
                 break;
         }
     });
     client.on('messageReactionRemove', async (reaction, user) => {
+        const newMember = guild.members.cache.get(user.id);
         if (reaction.message.partial) await reaction.message.fetch();
         if (reaction.partial) await reaction.fetch();
         if (user.bot) return;
         if (!reaction.message.guild) return;
         switch (reaction.emoji.name) {
             case emojiLib[0]:
-                message.member.roles.remove(localRoles[0]);
+                newMember.roles.remove(localRoles[0]);
                 break;
             case emojiLib[1]:
-                message.member.roles.remove(localRoles[1]);
+                newMember.roles.remove(localRoles[1]);
                 break;
             case emojiLib[2]:
-                message.member.roles.remove(localRoles[2]);
+                newMember.roles.remove(localRoles[2]);
                 break;
             case emojiLib[3]:
-                message.member.roles.remove(localRoles[3]);
+                newMember.roles.remove(localRoles[3]);
                 break;
             case emojiLib[4]:
-                message.member.roles.remove(localRoles[4]);
+                newMember.roles.remove(localRoles[4]);
                 break;
             case emojiLib[5]:
-                message.member.roles.remove(localRoles[5]);
+                newMember.roles.remove(localRoles[5]);
                 break;
             case emojiLib[6]:
-                message.member.roles.remove(localRoles[6]);
+                newMember.roles.remove(localRoles[6]);
                 break;
             case emojiLib[7]:
-                message.member.roles.remove(localRoles[7]);
+                newMember.roles.remove(localRoles[7]);
                 break;
             case emojiLib[8]:
-                message.member.roles.remove(localRoles[8]);
+                newMember.roles.remove(localRoles[8]);
                 break;
             case emojiLib[9]:
-                message.member.roles.remove(localRoles[9]);
+                newMember.roles.remove(localRoles[9]);
                 break;
             case emojiLib[10]:
-                message.member.roles.remove(localRoles[10]);
+                newMember.roles.remove(localRoles[10]);
                 break;
             case emojiLib[11]:
-                message.member.roles.remove(localRoles[11]);
+                newMember.roles.remove(localRoles[11]);
                 break;
             case emojiLib[12]:
-                message.member.roles.remove(localRoles[12]);
+                newMember.roles.remove(localRoles[12]);
                 break;
             case emojiLib[13]:
-                message.member.roles.remove(localRoles[13]);
+                newMember.roles.remove(localRoles[13]);
                 break;
             case emojiLib[14]:
-                message.member.roles.remove(localRoles[14]);
+                newMember.roles.remove(localRoles[14]);
                 break;
             case emojiLib[15]:
-                message.member.roles.remove(localRoles[15]);
+                newMember.roles.remove(localRoles[15]);
                 break;
         }
     });
@@ -422,7 +433,9 @@ function filter(memberList, msg) {
     for (var i = 0; i < interestRoles.length; i++) {
         // msg.member.roles.cache.some(r => console.log(r.name));
         var Role = msg.member.roles.cache.some(r => r.name.includes(interestRoles[i]));
-        if (Role) {
+        // console.log(typeof Role);
+        // console.log(Role);
+        if ((Role) && (typeof Role != undefined) && (Role != undefined)) {
             // console.log(Role);
             authorRoles.push(interestRoles[i]);
         }
@@ -437,8 +450,8 @@ function filter(memberList, msg) {
         for (var i = 0; i < interestRoles.length; i++) {
             // msg.member.roles.cache.some(r => console.log(r.name));
             var Role = memb.roles.cache.some(r => r.name.includes(interestRoles[i]));
-            if (Role) {
-                // console.log(Role);
+            if ((Role) && (typeof Role != undefined) && (Role != undefined)) {
+                console.log(Role);
                 if (authorRoles.includes(interestRoles[i])) {
                     viableMembers.push(memb);
                     break;
@@ -447,12 +460,17 @@ function filter(memberList, msg) {
             }
         }
     });
-    // console.log(viableMembers.length);
-    let randInt = Math.floor(Math.random() * viableMembers.length);
-    // console.log("Random integer: " + randInt);
-    let randomMember = viableMembers[randInt];
-    // console.log(randomMember.user.username + " matched with " + msg.member.user.username);
-    return randomMember;
+    console.log(viableMembers.length);
+    if (viableMembers.length > 0) {
+        let randInt = Math.floor(Math.random() * viableMembers.length);
+        console.log("Random integer: " + randInt);
+        let randomMember = viableMembers[randInt];
+        console.log(typeof randomMember)
+        console.log(randomMember.user.username + " matched with " + msg.member.user.username);
+        return randomMember;
+    } else {
+        return null;
+    }
 }
 
 
@@ -469,4 +487,5 @@ async function recache(serverID) {
 }
 
 
-client.login(process.env.TOKEN);
+// client.login(process.env.TOKEN);
+client.login('OTIyNDk5OTk1MDcxMDUzODM0.YcCXEg.QpEFnwVQTr-jgN-gHk2Gzs_4x48');
